@@ -6,6 +6,8 @@ public class Settings {
 
     private Map<String, String> regras;
 
+    public Settings() {}
+
     public Settings(Map<String, String> regras) {
         this.regras = regras;
     }

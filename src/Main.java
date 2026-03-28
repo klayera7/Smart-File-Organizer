@@ -1,5 +1,7 @@
 import config.Settings;
 import utils.FileHandler;
+import java.util.Map;
+import java.util.HashMap;
 
 void main(String[] args) {
 
@@ -11,16 +13,16 @@ void main(String[] args) {
 
     Settings settings = new Settings(meuMapaDeRegras);
 
-    String meuArquivo = "arquivo.jpg";
+    String caminhoDoArquivoOrigem = "C:\\Users\\alexk\\OneDrive\\Área de Trabalho\\Origem\\IMG_2450.jpg";
 
     FileHandler handler = new FileHandler();
 
-    String extensao = handler.extrairExtensao(meuArquivo);
+    String extensao = handler.extrairExtensao(caminhoDoArquivoOrigem);
 
     String pastaDestino = settings.getPastaDestino(extensao);
 
-    System.out.println("Arquivo: " + meuArquivo);
-    System.out.println("Extensão: " + extensao);
-    System.out.println("Pasta de destino: " + pastaDestino);
+
+    String caminhoDaPastaDestino = "C:\\Users\\alexk\\OneDrive\\Área de Trabalho\\Destino\\" + pastaDestino;
+    handler.moverArquivo(caminhoDoArquivoOrigem, caminhoDaPastaDestino);
 
 }

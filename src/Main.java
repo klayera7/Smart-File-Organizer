@@ -2,6 +2,8 @@ import config.Settings;
 import utils.FileHandler;
 import java.util.Map;
 import java.util.HashMap;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 void main(String[] args) {
 
@@ -14,6 +16,7 @@ void main(String[] args) {
     meuMapaDeRegras.put(".gif", "Imagens");
     meuMapaDeRegras.put(".svg", "Imagens");
     meuMapaDeRegras.put(".webp", "Imagens");
+    meuMapaDeRegras.put(".HEIC", "Imagens");
 
     // Vídeos
     meuMapaDeRegras.put(".mp4", "Vídeos");
@@ -43,16 +46,26 @@ void main(String[] args) {
     meuMapaDeRegras.put(".7z", "Compactados");
 
     Settings settings = new Settings(meuMapaDeRegras);
-
-    String caminhoDoArquivoOrigem = "C:\\Users\\alexk\\OneDrive\\Área de Trabalho\\Origem\\IMG_2450.jpg";
-
     FileHandler handler = new FileHandler();
 
-    String extensao = handler.extrairExtensao(caminhoDoArquivoOrigem);
+    Path pastaOrigem = Path.of("C:\\Users\\alexk\\OneDrive\\Área de Trabalho\\Origem");
+    String baseDestino = "C:\\Users\\alexk\\OneDrive\\Área de Trabalho\\Destino\\";
 
-    String pastaDestino = settings.getPastaDestino(extensao);
 
-    String caminhoDaPastaDestino = "C:\\Users\\alexk\\OneDrive\\Área de Trabalho\\Destino\\" + pastaDestino;
-    handler.moverArquivo(caminhoDoArquivoOrigem, caminhoDaPastaDestino);
+    try (java.nio.file.DirectoryStream<Path> buscador = Files.newDirectoryStream(pastaOrigem)) {
+
+        for (Path arquivoAtual : buscador) {
+            if (Files.isRegularFile(arquivoAtual)) {
+                String caminhoOrigem = arquivoAtual.toString();
+                String extensao = handler.extrairExtensao(caminhoOrigem);
+                String pastaDestino = settings.getPastaDestino(extensao);
+                String caminhoDaPastaDestino = baseDestino + pastaDestino;
+                handler.moverArquivo(caminhoOrigem, caminhoDaPastaDestino);
+            }
+        }
+    } catch (java.io.IOException e) {
+        System.out.println("Erro no buscador: " + e.getMessage());
+    }
+
 
 }

@@ -25,8 +25,20 @@ public class FileHandler {
 
                 Path destinoFinal = caminhoDestino.resolve(caminhoOrigem.getFileName());
 
+                int contador = 1;
+                String nomeOriginal = caminhoOrigem.getFileName().toString();
+                int posicaoPonto = nomeOriginal.lastIndexOf(".");
+                String nomeSemExtensao = nomeOriginal.substring(0, posicaoPonto);
+                String extensao = nomeOriginal.substring(posicaoPonto);
+                while (Files.exists(destinoFinal)) {
+                    System.out.println("Arquivo já existe: " + "[" + destinoFinal + "]");
+                    String novoNome = nomeSemExtensao + "(" + contador + ")" + extensao;
+                    destinoFinal = caminhoDestino.resolve(novoNome);
+                    contador++;
+                }
+
                 Files.move(caminhoOrigem, destinoFinal);
-                System.out.println("Arquivo movido: " + nomeArquivo + " -> " + destinoFinal);
+                System.out.println("Arquivo movido: " + nomeArquivo + " -> " + "[" + destinoFinal + "]");
 
             } catch (IOException e){
                 System.out.println("Erro ao mover arquivo: " + e.getMessage());

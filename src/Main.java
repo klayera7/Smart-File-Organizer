@@ -12,8 +12,16 @@ void main(String[] args) {
     Settings settings = new Settings();
     FileHandler handler = new FileHandler();
 
-    Path pastaOrigem = Path.of("C:\\Users\\alexk\\OneDrive\\Área de Trabalho\\Origem");
-    String baseDestino = "C:\\Users\\alexk\\OneDrive\\Área de Trabalho\\Destino\\";
+    String usuarioHome = System.getProperty("user.home");
+    Path pastaOrigem = Path.of(usuarioHome, "OneDrive", "Área de Trabalho", "Origem");
+    String baseDestino = Path.of(usuarioHome, "OneDrive", "Área de Trabalho", "Destino").toString() + "\\";
+
+    try {
+        Files.createDirectories(pastaOrigem);
+        Files.createDirectories(Path.of(baseDestino));
+    } catch (java.io.IOException e) {
+        System.out.println("Erro ao criar pastas base: " + e.getMessage());
+    }
 
 
     try {

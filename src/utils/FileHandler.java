@@ -28,8 +28,17 @@ public class FileHandler {
                 int contador = 1;
                 String nomeOriginal = caminhoOrigem.getFileName().toString();
                 int posicaoPonto = nomeOriginal.lastIndexOf(".");
-                String nomeSemExtensao = nomeOriginal.substring(0, posicaoPonto);
-                String extensao = nomeOriginal.substring(posicaoPonto);
+
+                String nomeSemExtensao;
+                String extensao;
+                if (posicaoPonto != -1) {
+                    nomeSemExtensao = nomeOriginal.substring(0, posicaoPonto);
+                    extensao = nomeOriginal.substring(posicaoPonto);
+                } else {
+                    nomeSemExtensao = nomeOriginal;
+                    extensao = "";
+                }
+
                 while (Files.exists(destinoFinal)) {
                     System.out.println("Arquivo já existe: " + "[" + destinoFinal + "]");
                     String novoNome = nomeSemExtensao + "(" + contador + ")" + extensao;

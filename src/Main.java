@@ -1,5 +1,7 @@
 import config.Settings;
 import utils.FileHandler;
+
+import javax.swing.*;
 import java.nio.file.Path;
 import java.nio.file.FileSystems;
 import java.nio.file.StandardWatchEventKinds;
@@ -13,14 +15,36 @@ void main(String[] args) {
     FileHandler handler = new FileHandler();
 
     String usuarioHome = System.getProperty("user.home");
-    Path pastaOrigem = Path.of(usuarioHome, "OneDrive", "Área de Trabalho", "Origem");
-    String baseDestino = Path.of(usuarioHome, "OneDrive", "Área de Trabalho", "Destino").toString() + "\\";
+    Path pastaOrigem = Path.of(usuarioHome, "Downloads");
+    Path pastaDestinoBase = Path.of(usuarioHome,  "Organized Files");
+    String baseDestino = pastaDestinoBase.toString() + java.io.File.separator;
 
     try {
-        Files.createDirectories(pastaOrigem);
-        Files.createDirectories(Path.of(baseDestino));
+        Files.createDirectories(pastaDestinoBase);
     } catch (java.io.IOException e) {
         System.out.println("Erro ao criar pastas base: " + e.getMessage());
+    }
+
+    try (java.nio.file.DirectoryStream<Path> stream = Files.newDirectoryStream(pastaOrigem)) {
+        for (Path path : stream) {
+            if (Files.isRegularFile(path)) {
+                String extensao = handler.extrairExtensao(path.toString());
+                String pastaDestino = baseDestino + settings.getPastaDestino(extensao);
+                handler.moverArquivo(path.toString(), pastaDestino);
+            }
+        }
+    } catch (java.io.IOException e) {
+        System.out.println("Erro ao listar arquivos: " + e.getMessage());
+        e.printStackTrace();
+    }
+
+    try {
+        if (java.awt.Desktop.isDesktopSupported()) {
+            java.awt.Desktop.getDesktop().open(pastaDestinoBase.toFile());
+            System.out.println("Pasta aberta automaticamente no explorador!");
+        }
+    } catch (Exception e) {
+        System.out.println("Não foi possível abrir a pasta automaticamente: " + e.getMessage());
     }
 
 

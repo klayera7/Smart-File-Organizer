@@ -1,7 +1,8 @@
 import config.Settings;
-import utils.FileHandler;
+import utils.FileNameUtils;
+import utils.FileMoverService;
 
-import javax.swing.*;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.FileSystems;
 import java.nio.file.StandardWatchEventKinds;
@@ -12,7 +13,8 @@ import java.nio.file.WatchService;
 void main(String[] args) {
 
     Settings settings = new Settings();
-    FileHandler handler = new FileHandler();
+    FileNameUtils nameUtils = new FileNameUtils();
+    FileMoverService moverService = new FileMoverService(nameUtils);
 
     String usuarioHome = System.getProperty("user.home");
     Path pastaOrigem = Path.of(usuarioHome, "Downloads");
@@ -28,9 +30,9 @@ void main(String[] args) {
     try (java.nio.file.DirectoryStream<Path> stream = Files.newDirectoryStream(pastaOrigem)) {
         for (Path path : stream) {
             if (Files.isRegularFile(path)) {
-                String extensao = handler.extrairExtensao(path.toString());
+                String extensao = nameUtils.extrairExtensao(path.getFileName().toString());
                 String pastaDestino = baseDestino + settings.getPastaDestino(extensao);
-                handler.moverArquivo(path.toString(), pastaDestino);
+                moverService.moverArquivo(path.toString(), pastaDestino);
             }
         }
     } catch (java.io.IOException e) {
@@ -46,7 +48,6 @@ void main(String[] args) {
     } catch (Exception e) {
         System.out.println("Não foi possível abrir a pasta automaticamente: " + e.getMessage());
     }
-
 
     try {
         WatchService vigia = FileSystems.getDefault().newWatchService();
@@ -65,15 +66,14 @@ void main(String[] args) {
                 if (Files.isRegularFile(caminhoCompleto)) {
                     System.out.println("Novo arquivo detectado: " + nomeDoArquivoNovo);
 
-                    String extensao = handler.extrairExtensao(nomeDoArquivoNovo.toString());
+                    String extensao = nameUtils.extrairExtensao(nomeDoArquivoNovo.toString());
                     String pastaDestino = baseDestino + settings.getPastaDestino(extensao);
 
                     int tentativas = 0;
 
                     while (Files.exists(caminhoCompleto) && tentativas < 5) {
 
-                        handler.moverArquivo(caminhoCompleto.toString(), pastaDestino);
-
+                        moverService.moverArquivo(caminhoCompleto.toString(), pastaDestino);
 
                         if (!Files.exists(caminhoCompleto)) {
                             System.out.println("✅ Movido na velocidade da luz!");
@@ -92,13 +92,8 @@ void main(String[] args) {
             chave.reset();
         }
 
-
     } catch (Exception e) {
         System.out.println("Erro ao iniciar o vigário: " + e.getMessage());
         e.printStackTrace();
     }
-
-
-
-
 }

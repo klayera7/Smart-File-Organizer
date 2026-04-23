@@ -3,9 +3,12 @@ package utils;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.io.IOException;
+// Novos imports adicionados para a etapa 4 funcionarem
+import java.nio.channels.FileChannel;
+import java.nio.file.StandardOpenOption;
 
 public class FileMoverService {
-    
+
     private final FileNameUtils fileNameUtils;
 
     public FileMoverService() {
@@ -14,6 +17,14 @@ public class FileMoverService {
 
     public FileMoverService(FileNameUtils fileNameUtils) {
         this.fileNameUtils = fileNameUtils;
+    }
+
+    public boolean isArquivoLivre(Path arquivo) {
+        try (FileChannel channel = FileChannel.open(arquivo, StandardOpenOption.WRITE)) {
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     public void moverArquivo(String nomeArquivo, String pastaDestino) {
@@ -28,7 +39,7 @@ public class FileMoverService {
             String nomeOriginal = caminhoOrigem.getFileName().toString();
 
             while (Files.exists(destinoFinal)) {
-                System.out.println("Arquivo já existe: " + "[" + destinoFinal + "]");
+                System.out.println("Arquivo ja existe: " + "[" + destinoFinal + "]");
                 String novoNome = fileNameUtils.gerarNomeComContador(nomeOriginal, contador);
                 destinoFinal = caminhoDestino.resolve(novoNome);
                 contador++;

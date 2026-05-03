@@ -39,17 +39,17 @@ public class FileMoverService {
             String nomeOriginal = caminhoOrigem.getFileName().toString();
 
             while (Files.exists(destinoFinal)) {
-                System.out.println("Arquivo ja existe: " + "[" + destinoFinal + "]");
+                System.out.println("File already exists: " + "[" + destinoFinal + "]");
                 String novoNome = fileNameUtils.gerarNomeComContador(nomeOriginal, contador);
                 destinoFinal = caminhoDestino.resolve(novoNome);
                 contador++;
             }
 
             Files.move(caminhoOrigem, destinoFinal);
-            System.out.println("Arquivo movido: " + nomeArquivo + " -> " + "[" + destinoFinal + "]");
+            System.out.println("File moved: " + nomeArquivo + " -> " + "[" + destinoFinal + "]");
 
         } catch (IOException e) {
-            System.out.println("Erro ao mover arquivo: " + e.getMessage());
+            System.out.println("Error moving file: " + e.getMessage());
             e.printStackTrace();
         }
     }
